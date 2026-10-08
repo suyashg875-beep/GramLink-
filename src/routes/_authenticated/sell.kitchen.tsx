@@ -117,17 +117,21 @@ function KitchenPage() {
       }
 
       const { error } = await supabase
-        .from("seller_profiles")
-        .update({
-          business_name: kitchenName.trim(),
-          about: about.trim(),
-          village_or_area: area.trim(),
-          pincode: pincode.trim(),
-          address: address.trim(),
-          kitchen_image_url: imageUrl || null,
-        })
-        .eq("user_id", user.id);
-
+  .from("seller_profiles")
+  .upsert(
+    {
+      user_id: user.id,
+      business_name: kitchenName.trim(),
+      about: about.trim(),
+      village_or_area: area.trim(),
+      pincode: pincode.trim(),
+      address: address.trim(),
+      kitchen_image_url: imageUrl || null,
+    },
+    {
+      onConflict: "user_id",
+    }
+  );
       if (error) {
         toast.error(error.message);
         return;
