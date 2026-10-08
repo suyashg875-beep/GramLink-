@@ -133,9 +133,10 @@ function KitchenPage() {
     }
   );
       if (error) {
-        toast.error(error.message);
-        return;
-      }
+  console.error("SELLER PROFILE SAVE ERROR:", error);
+  toast.error(error.message);
+  return;
+}
 
       setCurrentImage(imageUrl);
       setKitchenImage(null);
