@@ -13,6 +13,7 @@ import {
   UtensilsCrossed,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth";
 import { Page, StatusPill } from "@/components/gram";
 import { rupees } from "@/lib/helpers";
 
@@ -31,33 +32,43 @@ export const Route = createFileRoute("/_authenticated/sell/")({
 });
 
 function SellerDashboardPage() {
-  const { data: orders = [], isLoading: ordersLoading } = useQuery({
-    queryKey: ["seller-dashboard-orders"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("orders")
-        .select("*")
-        .order("created_at", { ascending: false });
+  
+const { user } = useAuth();
+const sellerId = user?.id;
 
-      if (error) throw error;
+const { data: orders = [], isLoading: ordersLoading } = useQuery({
+  queryKey: ["seller-dashboard-orders", sellerId],
+  enabled: !!sellerId,
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("seller_id", sellerId!)
+      .order("created_at", { ascending: false });
 
-      return data ?? [];
-    },
-  });
+    if (error) throw error;
+    return data ?? [];
+  },
+});
 
-  const { data: products = [], isLoading: productsLoading } = useQuery({
-    queryKey: ["seller-dashboard-products"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .order("created_at", { ascending: false });
 
-      if (error) throw error;
+  
+const { data: products = [], isLoading: productsLoading } = useQuery({
+  queryKey: ["seller-dashboard-products", sellerId],
+  enabled: !!sellerId,
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("seller_id", sellerId!)
+      .order("created_at", { ascending: false });
 
-      return data ?? [];
-    },
-  });
+    if (error) throw error;
+
+    return data ?? [];
+  },
+});
+
 
   const isLoading = ordersLoading || productsLoading;
 

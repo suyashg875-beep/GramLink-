@@ -22,16 +22,14 @@ export function Logo() {
   return (
     <Link
       to="/"
-      className="group flex items-center gap-2.5"
+      className="group flex min-w-0 items-center"
       aria-label="ApnaKitchen home"
     >
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm transition-transform duration-200 group-hover:scale-105">
-        <ChefHat className="h-5 w-5" strokeWidth={2.2} />
-      </span>
-
-      <span className="font-display text-xl font-extrabold tracking-tight text-foreground sm:text-2xl">
-        Apna<span className="text-primary">Kitchen</span>
-      </span>
+      <img
+        src="/apnakitchen-wordmark-transparent.png"
+        alt="ApnaKitchen — घरासारखा स्वाद, थेट तुमच्या घरापर्यंत"
+        className="h-auto w-[190px] object-contain transition-transform duration-200 group-hover:scale-[1.02] sm:w-[230px]"
+      />
     </Link>
   );
 }

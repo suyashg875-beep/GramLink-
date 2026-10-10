@@ -482,7 +482,6 @@ async function updateProduct(e: React.FormEvent) {
                 <option value="Masalas">Masalas</option>
                 <option value="Sweets">Sweets</option>
                 <option value="Snacks">Snacks</option>
-                <option value="Sweets">Puran Poli</option>
                 <option value="Other">Other</option>
               </select>
             </Field>

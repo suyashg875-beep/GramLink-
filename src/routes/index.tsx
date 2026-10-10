@@ -231,16 +231,8 @@ function Home() {
     },
   });
 
-  const filteredKitchens = kitchens.filter(
-    (kitchen) =>
-      !search ||
-      kitchen.business_name
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-      kitchen.village_or_area
-        .toLowerCase()
-        .includes(search.toLowerCase()),
-  );
+  
+
 
   /* ------------------------------------------------------- */
   /* PRODUCTS QUERY                                           */
@@ -255,7 +247,7 @@ function Home() {
       let q = supabase
         .from("products")
         .select(
-          "id,name,price,category,image_urls,description,stock,is_available,seller_profiles!inner(business_name,pincode,village_or_area)",
+          "id,name,price,category,image_urls,description,stock,is_available,seller_id,seller_profiles!inner(business_name,pincode,village_or_area)",
         )
         .eq("is_published", true)
         .eq("is_available", true)
@@ -289,7 +281,24 @@ function Home() {
       .map((p) => p.image_urls[0])
       .filter(Boolean),
   );
+   
+  const filteredKitchens = kitchens.filter((kitchen) => {
+  const term = search.trim().toLowerCase();
 
+  if (!term) return true;
+
+  const matchesKitchen =
+    (kitchen.business_name ?? "").toLowerCase().includes(term) ||
+    (kitchen.village_or_area ?? "").toLowerCase().includes(term);
+
+  const matchesProduct = products.some(
+    (product) =>
+      product.seller_id === kitchen.user_id &&
+      (product.name ?? "").toLowerCase().includes(term),
+  );
+
+  return matchesKitchen || matchesProduct;
+});
   /* ------------------------------------------------------- */
   /* LOADING                                                  */
   /* ------------------------------------------------------- */
@@ -573,7 +582,7 @@ function Home() {
       {/* FOOD VISUAL */}
       <div className="relative min-h-[290px] overflow-hidden sm:min-h-[360px] lg:min-h-[430px]">
         <img
-          src="https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=1400&q=90"
+          src="/Patawarachi-Puranpoli-Featured.jpg"
           alt="Traditional homemade Puran Poli"
           className="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.04]"
         />

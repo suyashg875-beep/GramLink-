@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Empty, Page, StatusPill } from "@/components/gram";
 import { rupees } from "@/lib/helpers";
 import { useState } from "react";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/_authenticated/sell/orders")({
   head: () => ({
@@ -29,14 +30,22 @@ export const Route = createFileRoute("/_authenticated/sell/orders")({
 
 function SellerOrdersPage() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const sellerId = user?.id;
   const { data: orders = [], isLoading } = useQuery({
-    queryKey: ["seller-orders"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
+  queryKey: ["seller-orders", sellerId],
+  enabled: !!sellerId,
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("seller_id", sellerId!)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return data ?? [];
+  },
+});
   const { data: items = [] } = useQuery({
     queryKey: ["seller-order-items", orders.map((o) => o.id)],
     enabled: orders.length > 0,
